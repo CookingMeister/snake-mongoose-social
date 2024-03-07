@@ -1,6 +1,6 @@
 import express from 'express';
-import db from './config/connection';
-import routes from './routes';
+import db from './config/connection.js';
+// import routes from './routes';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Use Routes
-app.use(routes);
+// app.use(routes);
 
 // Connect to the Mongo DB and start Server
 db.once('open', () => {
