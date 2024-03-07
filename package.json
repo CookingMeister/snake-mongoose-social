@@ -1,0 +1,17 @@
+{
+  "name": "snake-mongoose-social",
+  "version": "1.0.0",
+  "description": "A robust backend API for a social network web application, facilitating user authentication, friend connections, thought sharing, and reactions. Powered by Express.js, MongoDB, and Mongoose ODM.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.3",
+    "mongoose": "^8.2.1"
+  }
+}
