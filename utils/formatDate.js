@@ -7,7 +7,22 @@ const formatDate = (timestamp) => {
   const formattedMonth = parsedDate.format('MMM');
 
   // Get formatted day of month with suffix
-  const dayOfMonth = parsedDate.format('D');
+  const day = parsedDate.format('D'); // Get the day of the month (1-31)
+
+  let dayOfMonth;
+  switch (day % 10) {
+    case 1:
+      dayOfMonth = day + 'st';
+      break;
+    case 2:
+      dayOfMonth = day + 'nd';
+      break;
+    case 3:
+      dayOfMonth = day + 'rd';
+      break;
+    default:
+      dayOfMonth = day + 'th';
+  }
 
   const year = parsedDate.format('YYYY');
   const hour = parsedDate.format('hh');

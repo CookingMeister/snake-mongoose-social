@@ -20,7 +20,6 @@ const getThoughtById = async (req, res) => {
     //  FindById method
     const { thoughtId } = req.params;
     const thought = await Thought.findById(thoughtId);
-    console.log(thought); 
     // .populate('reactions'); // Populate reactions with associated data
 
     return !thought
@@ -35,7 +34,7 @@ const getThoughtById = async (req, res) => {
 // Create a new thought
 const createThought = async (req, res) => {
   try {
-    const { thoughtText, username } = req.body;
+    const { thoughtText, username, userId } = req.body;
     const newThought = new Thought({ thoughtText, username });
     const savedThought = await newThought.save();
 
@@ -45,7 +44,7 @@ const createThought = async (req, res) => {
       
     // Find the user and push the created thought's ID to their thoughts array
     const user = await User.findOneAndUpdate(
-      { username },
+      { _id: userId },
       { $push: { thoughts: savedThought._id } },
       { new: true } // Return the updated user document
     );
@@ -58,6 +57,31 @@ const createThought = async (req, res) => {
     return res.status(500).json({ message: 'Server error!' });
   }
 };
+
+// Update a thought by ID
+const updateThought = async (req, res) => {
+  try {
+    const { thoughtId } = req.params;
+    const { thoughtText } = req.body;
+
+    const updatedThought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { thoughtText },  // Update only the specified field
+      {
+        new: true,      // Return updated document and run validators
+        runValidators: true,
+      }
+    );
+
+    return updatedThought
+      ? res.status(201).json(updatedThought)
+      : res.status(404).json({ message: 'Thought not found' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 // Delete a thought by ID
 const deleteThought = async (req, res) => {
@@ -79,4 +103,4 @@ const deleteThought = async (req, res) => {
 };
 
 
-export { getAllThoughts, getThoughtById, createThought, deleteThought };
+export { getAllThoughts, getThoughtById, createThought, updateThought, deleteThought };
