@@ -1,5 +1,6 @@
-import User from '../models/index.js';
+import { User } from '../models/index.js';
 
+// Get Users
 const getAllUsers = async (req, res) => {
   try {
     // Find method
@@ -12,6 +13,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// Create User
 const createUser = async (req, res) => {
   try {
     // Create method
@@ -25,13 +27,14 @@ const createUser = async (req, res) => {
   }
 };
 
+// Get User by ID
 const getUserById = async (req, res) => {
   try {
     // FindOne method
     const user = await User.findOne({ _id: req.params.userId })
-      .select('-__v');
+      .select('-__v')
     //   .populate('friends')
-    //   .populate('thoughts');
+      .populate('thoughts');
 
     return !user
       ? res.status(404).json({ message: 'No user found with this id!' })
@@ -42,6 +45,7 @@ const getUserById = async (req, res) => {
   }
 };
 
+// Update User by ID
 const updateUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -62,6 +66,7 @@ const updateUser = async (req, res) => {
   }
 };
 
+//  Delete User
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;

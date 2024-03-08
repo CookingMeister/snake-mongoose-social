@@ -3,15 +3,20 @@ import  { getAllUsers, getUserById, createUser, updateUser, deleteUser } from '.
 
 const router = Router();
 
-router.route('/')
+//  users Routes
+router
+    .route('/')
     .get(getAllUsers)
     .post(createUser);
 
-router.route('/:userId')
+//  userId routes
+router
+    .route('/:userId')
     .get(getUserById)
     .put(updateUser)
     .delete(deleteUser);
 
+//  friendId routes
 // router.route('/:userId/friends/:friendId')
 //     .post()
 //     .delete();
