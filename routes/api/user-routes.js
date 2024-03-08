@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import  { getAllUsers, getUserById, createUser } from '../../controllers/userController.js';
+import  { getAllUsers, getUserById, createUser, updateUser, deleteUser } from '../../controllers/userController.js';
 
 const router = Router();
 
@@ -8,9 +8,9 @@ router.route('/')
     .post(createUser);
 
 router.route('/:userId')
-    .get(getUserById);
-//     .put()
-//     .delete();
+    .get(getUserById)
+    .put(updateUser)
+    .delete(deleteUser);
 
 // router.route('/:userId/friends/:friendId')
 //     .post()
