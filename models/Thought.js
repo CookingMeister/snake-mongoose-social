@@ -35,14 +35,12 @@ const thoughtSchema = new mongoose.Schema(
   {
     toJSON: {
       virtuals: true,
-    },
-    toObject: {
-      virtuals: true,
+      getters: true,
     },
   }
 );
 
-thoughtSchema.virtual('reactionCount', () => {
+thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;
 });
 

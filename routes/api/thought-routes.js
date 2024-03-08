@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllThoughts, getThoughtById, createThought } from '../../controllers/thoughtController.js';
+import { getAllThoughts, getThoughtById, createThought, deleteThought } from '../../controllers/thoughtController.js';
 
 const router = Router();
 
@@ -11,6 +11,7 @@ router
 
 router
     .route('/:thoughtId')
-    .get(getThoughtById);
+    .get(getThoughtById)
+    .delete(deleteThought);
 
 export default router;

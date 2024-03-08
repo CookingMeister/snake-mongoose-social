@@ -4,7 +4,8 @@ import { Thought, User } from '../models/index.js';
 const getAllThoughts = async (req, res) => {
   try {
     //  Find method
-    const thoughts = await Thought.find().sort({ createdAt: 'desc' }); // Sort by creation date descending
+    const thoughts = await Thought.find()
+      .sort({ createdAt: 'desc' }); // Sort by creation date descending
     // .populate('reactions'); // Populate reactions with associated data
     return res.status(200).json(thoughts);
   } catch (err) {
@@ -19,6 +20,7 @@ const getThoughtById = async (req, res) => {
     //  FindById method
     const { thoughtId } = req.params;
     const thought = await Thought.findById(thoughtId);
+    console.log(thought); 
     // .populate('reactions'); // Populate reactions with associated data
 
     return !thought
@@ -57,4 +59,24 @@ const createThought = async (req, res) => {
   }
 };
 
-export { getAllThoughts, getThoughtById, createThought };
+// Delete a thought by ID
+const deleteThought = async (req, res) => {
+  try {
+    const { thoughtId } = req.params;
+    const deletedThought = await Thought.findByIdAndDelete(thoughtId);
+
+    if (!deletedThought) {
+      return res.status(404).json({ message: 'Thought not found!' });
+    }
+
+    // Additional logic here
+
+    return res.status(200).json({ message: 'Thought deleted successfully!' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export { getAllThoughts, getThoughtById, createThought, deleteThought };
