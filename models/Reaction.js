@@ -5,7 +5,7 @@
  * Helper method formattedCreatedAt is used.
  */
 import mongoose from 'mongoose';
-import { formattedCreatedAt } from '../utils/formatDate';
+import formatDate from '../utils/formatDate.js';
 
 const reactionSchema = new mongoose.Schema(
   {
@@ -25,7 +25,7 @@ const reactionSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (timestamp) => formattedCreatedAt(timestamp),
+      get: (timestamp) => formatDate(timestamp),
     },
   },
   {

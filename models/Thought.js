@@ -10,8 +10,8 @@
  * The Thought model provides an interface to interact with the thoughts collection in MongoDB.
  */
 import mongoose from 'mongoose';
-import { reactionSchema } from '../models/Reaction';
-import { formattedCreatedAt } from '../utils/formatDate';
+import reactionSchema from '../models/Reaction.js';
+import formatDate from '../utils/formatDate.js';
 
 const thoughtSchema = new mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const thoughtSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (timestamp) => formattedCreatedAt(timestamp),
+      get: (timestamp) => formatDate(timestamp),
     },
     username: {
       type: String,

@@ -4,7 +4,7 @@
  * Exports the configured router as the default export.
  */
 import { Router } from 'express';
-import apiRoutes from './api';
+import apiRoutes from './api/index.js';
 
 const router = Router();
 

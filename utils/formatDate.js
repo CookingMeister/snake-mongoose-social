@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+dayjs.extend('dayjs/plugin/utc');
+
 const formattedCreatedAt = (timestamp) => {
   const parsedDate = dayjs.utc(timestamp); // Parse timestamp as UTC
 
@@ -16,3 +19,4 @@ const formattedCreatedAt = (timestamp) => {
 
   return formattedTimestamp; // Example: "Jan 1st, 2024 at 5:30 PM"
 };
+export default formattedCreatedAt;
