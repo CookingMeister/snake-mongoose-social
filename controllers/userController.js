@@ -35,7 +35,7 @@ const getUserById = async (req, res) => {
     // FindOne method
     const user = await User.findOne({ _id: req.params.userId })
       .select('-__v')
-    //   .populate('friends')
+      //   .populate('friends')
       .populate('thoughts');
 
     return !user
@@ -50,8 +50,8 @@ const getUserById = async (req, res) => {
 
 // Update User by ID
 const updateUser = async (req, res) => {
-  try {   //  Get userId from params
-    const { userId } = req.params;
+  try {
+    const { userId } = req.params; // Destructure to get userId
     //  Get updates from body
     const updates = req.body;
     //  FindByIdAndUpdate method
@@ -63,7 +63,6 @@ const updateUser = async (req, res) => {
     return !updatedUser
       ? res.status(404).json({ message: 'User not found!' })
       : res.status(200).json(updatedUser);
-
   } catch (err) {
     //  Handle Errors
     console.error(err);
@@ -74,15 +73,13 @@ const updateUser = async (req, res) => {
 //  Delete User
 const deleteUser = async (req, res) => {
   try {
-    //  Get userId from params
-    const { userId } = req.params;
+    const { userId } = req.params; // Destructure to get userId
     //   FindByIdAndDelete method
     const deletedUser = await User.findByIdAndDelete(userId);
-// add delete users thoughts here too
+    // add delete users thoughts here too
     return !deletedUser
       ? res.status(404).json({ message: 'User not found!' })
       : res.status(200).json({ message: 'User deleted successfully!' });
-
   } catch (err) {
     //  Handle Errors
     console.error(err);
@@ -92,8 +89,7 @@ const deleteUser = async (req, res) => {
 
 // Add Friend
 const addFriend = async (req, res) => {
-  //  Get userId and friendId from params
-  const { userId, friendId } = req.params;
+  const { userId, friendId } = req.params; // Destructure to get userId and friendId
 
   try {
     // Find the user and friend by their IDs
@@ -117,14 +113,59 @@ const addFriend = async (req, res) => {
     await user.save();
     await friend.save();
 
-    res.json({ message: 'Friend added successfully!' });
+    res.status(201).json({ message: 'Friend added successfully!' });
   } catch (err) {
     // Handle Errors
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error!' });
   }
 };
 
 // Delete Friend
 
-export { getAllUsers, getUserById, createUser, updateUser, deleteUser, addFriend };
+const deleteFriend = async (req, res) => {
+  const { userId, friendId } = req.params; // Destructure to get userId and friendId
+
+  // Check if friend ID exists
+  if (!friendId) {
+    return res.status(400).json({ message: 'Friend ID is required!' });
+  }
+
+  try {
+    // Find the user and friend by their IDs
+    const [user, friend] = await Promise.all([
+      User.findById(userId),
+      User.findById(friendId),
+    ]);
+
+    // Check if user and friend exist
+    !user || !friend
+      ? res.status(404).json({ message: 'User or friend not found!' })
+      : // Check if they are friends
+      !user.friends.includes(friendId)
+      ? res.status(400).json({ message: 'You are not friends!' })
+      : null;
+
+    // Remove mutual friendship arrays
+    user.friends = user.friends.filter((id) => id.toString() !== friendId);
+    friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+    // Save user and friend updates
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: 'Friend deleted successfully!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error!' });
+  }
+};
+
+export {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addFriend,
+  deleteFriend
+};
