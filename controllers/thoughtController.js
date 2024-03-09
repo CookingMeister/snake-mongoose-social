@@ -115,7 +115,7 @@ const addReaction = async (req, res) => {
         runValidators: true,
       }
     );
-
+    //  If newReaction exists
     return newReaction
       ? res.status(201).json({ message: 'Reaction created successfully!' })
       : res.status(404).json({ message: 'Thought not found!' });
@@ -126,4 +126,30 @@ const addReaction = async (req, res) => {
   }
 };
 
-export { getAllThoughts, getThoughtById, createThought, updateThought, deleteThought, addReaction };
+// Delete Reaction
+const deleteReaction = async (req, res) => {
+  const { thoughtId, reactionId } = req.params; //  Destructure thoughtId and reactionId from params
+
+  try {
+    // Find By Id And Update Method
+    const thought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { $pull: { reactions: { reactionId: reactionId } } }, // Update reaction field
+      { new: true } // Return the updated document
+    );
+    // Check if reaction was removed from array
+    const reactionDeleted = thought.reactions.some(reaction => reaction.reactionId === reactionId)
+    // If thought exists
+    return thought
+    ? !reactionDeleted  // Check if reaction was removed from array
+      ? res.status(200).json({ message: 'Reaction deleted successfully!' })
+      : res.status(404).json({ message: 'Error Deleting Reaction!' }) //  Reaction was not removed from array
+    : res.status(404).json({ message: 'Thought not found!' });  //  Thought does not exist
+  } catch (err) {
+    //  Handle Errors
+    console.error(err);
+    res.status(500).json({ message: 'Server error!' });
+  }
+}
+
+export { getAllThoughts, getThoughtById, createThought, updateThought, deleteThought, addReaction, deleteReaction };
