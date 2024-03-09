@@ -37,9 +37,10 @@ const thoughtSchema = new mongoose.Schema(
       virtuals: true,
       getters: true,
     },
+    id: false,
   }
 );
-
+//  Virtual reactionCount to get number of reactions
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;
 });

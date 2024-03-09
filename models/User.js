@@ -55,8 +55,8 @@ const userSchema = new mongoose.Schema(
     id: false,
   }
 );
-// Inherits 'this' from the surrounding schema definition
-userSchema.virtual('friendCount', () => {
+// Virtual friendCount property to return the number of friends.
+userSchema.virtual('friendCount').get(function() {
   return this.friends.length;
 });
 
