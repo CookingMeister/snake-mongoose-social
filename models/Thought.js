@@ -10,7 +10,7 @@
  * The Thought model provides an interface to interact with the thoughts collection in MongoDB.
  */
 import mongoose from 'mongoose';
-import reactionSchema from '../models/Reaction.js';
+import reactionSchema from './Reaction.js';
 import formatDate from '../utils/formatDate.js';
 
 const thoughtSchema = new mongoose.Schema(
@@ -40,6 +40,7 @@ const thoughtSchema = new mongoose.Schema(
     id: false,
   }
 );
+
 //  Virtual reactionCount to get number of reactions
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;

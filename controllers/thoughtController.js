@@ -5,8 +5,8 @@ const getAllThoughts = async (req, res) => {
   try {
     //  Find method
     const thoughts = await Thought.find()
-      .sort({ createdAt: 'desc' }); // Sort by creation date descending
-    // .populate('reactions'); // Populate reactions with associated data
+      .sort({ createdAt: 'desc' }) // Sort by creation date descending
+      .populate('reactions'); // Populate reactions with associated data
     return res.status(200).json(thoughts);
   } catch (err) {
     console.error(err);
@@ -19,8 +19,8 @@ const getThoughtById = async (req, res) => {
   try {
     //  FindById method
     const { thoughtId } = req.params;
-    const thought = await Thought.findById(thoughtId);
-    // .populate('reactions'); // Populate reactions with associated data
+    const thought = await Thought.findById(thoughtId)
+      .populate('reactions'); // Populate reactions with associated data
 
     return !thought
       ? res.status(404).json({ message: 'Thought not found!' })
@@ -74,7 +74,7 @@ const updateThought = async (req, res) => {
     );
 
     return updatedThought
-      ? res.status(201).json(updatedThought)
+      ? res.status(201).json({ message: 'Thought updated successfully!' })
       : res.status(404).json({ message: 'Thought not found' });
   } catch (err) {
     console.error(err);
@@ -82,11 +82,11 @@ const updateThought = async (req, res) => {
   }
 };
 
-
 // Delete a thought by ID
 const deleteThought = async (req, res) => {
   try {
-    const { thoughtId } = req.params;
+    const { thoughtId } = req.params; //  Destructure thoughtId from params
+    // Find by ID and Delete method
     const deletedThought = await Thought.findByIdAndDelete(thoughtId);
 
     if (!deletedThought) {
@@ -102,5 +102,28 @@ const deleteThought = async (req, res) => {
   }
 };
 
+//  Add Reaction
+const addReaction = async (req, res) => {
+  try {
+    const { thoughtId } = req.params;   // Destructure to get thoughtId
+    //  Find By Id And Update method
+    const newReaction = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { $push: { reactions: req.body } },  // Update reaction field
+      {
+        new: true,  // Return updated document and run validators
+        runValidators: true,
+      }
+    );
 
-export { getAllThoughts, getThoughtById, createThought, updateThought, deleteThought };
+    return newReaction
+      ? res.status(201).json({ message: 'Reaction created successfully!' })
+      : res.status(404).json({ message: 'Thought not found!' });
+  } catch (err) {
+    //  Handle Errors
+    console.error(err);
+    res.status(500).json({ message: 'Server error!' });
+  }
+};
+
+export { getAllThoughts, getThoughtById, createThought, updateThought, deleteThought, addReaction };

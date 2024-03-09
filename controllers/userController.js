@@ -4,7 +4,8 @@ import { User } from '../models/index.js';
 const getAllUsers = async (req, res) => {
   try {
     // Find method
-    const users = await User.find({}).select('-__v');
+    const users = await User.find({})
+      .select('-__v');
 
     return res.status(200).json(users);
   } catch (err) {
@@ -35,7 +36,7 @@ const getUserById = async (req, res) => {
     // FindOne method
     const user = await User.findOne({ _id: req.params.userId })
       .select('-__v')
-      //   .populate('friends')
+      .populate('friends')
       .populate('thoughts');
 
     return !user

@@ -13,20 +13,20 @@ const router = Router();
 
 //  users Routes
 router
-    .route('/')
+  .route('/')
     .get(getAllUsers)
     .post(createUser);
 
 //  userId routes
 router
-    .route('/:userId')
+  .route('/:userId')
     .get(getUserById)
     .put(updateUser)
     .delete(deleteUser);
 
 //  friendId routes
 router
-    .route('/:userId/friends/:friendId')
+  .route('/:userId/friends/:friendId')
     .post(addFriend)
     .delete(deleteFriend);
 
