@@ -4,8 +4,7 @@ import { User } from '../models/index.js';
 const getAllUsers = async (req, res) => {
   try {
     // Find method
-    const users = await User.find({})
-      .select('-__v');
+    const users = await User.find({}).select('-__v');
 
     return res.status(200).json(users);
   } catch (err) {
@@ -22,7 +21,10 @@ const createUser = async (req, res) => {
     const user = await User.create({
       ...req.body,
     });
-    return res.status(201).json(user);
+    //  If user exists
+    return user
+      ? res.status(201).json({ message: 'User created successfully!' })
+      : res.status(400).json({ message: 'Error: User not created!' });
   } catch (err) {
     //  Handle Errors
     console.log(err);
@@ -33,8 +35,9 @@ const createUser = async (req, res) => {
 // Get User by ID
 const getUserById = async (req, res) => {
   try {
+    const { userId } = req.params; // Destructure to get userId
     // FindOne method
-    const user = await User.findOne({ _id: req.params.userId })
+    const user = await User.findOne({ _id: userId })
       .select('-__v')
       .populate('friends')
       .populate('thoughts');
@@ -107,13 +110,25 @@ const addFriend = async (req, res) => {
       ? res.status(400).json({ message: 'You are already friends!' })
       : null;
 
-    // Add mutual friendship to friends arrays
-    user.friends.push(friendId);
-    friend.friends.push(userId);
-    // Save user and friend updates
-    await user.save();
-    await friend.save();
-
+    /* Add mutual friendship
+    * Add friend to user */ 
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { friends: friendId } },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+    // Add user to friend
+    await User.findOneAndUpdate(
+      { _id: friendId },
+      { $push: { friends: userId } },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
     res.status(201).json({ message: 'Friend added successfully!' });
   } catch (err) {
     // Handle Errors
@@ -147,13 +162,25 @@ const deleteFriend = async (req, res) => {
       ? res.status(400).json({ message: 'You are not friends!' })
       : null;
 
-    // Remove mutual friendship arrays
-    user.friends = user.friends.filter((id) => id.toString() !== friendId);
-    friend.friends = friend.friends.filter((id) => id.toString() !== userId);
-    // Save user and friend updates
-    await user.save();
-    await friend.save();
-
+    /* Remove mutual friendship
+    * Remove friend from user */
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { friends: friendId } },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+    // Remove user from friend
+    await User.findOneAndUpdate(
+      { _id: friendId },
+      { $pull: { friends: userId } },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
     res.status(200).json({ message: 'Friend deleted successfully!' });
   } catch (err) {
     console.error(err);
@@ -168,5 +195,5 @@ export {
   updateUser,
   deleteUser,
   addFriend,
-  deleteFriend
+  deleteFriend,
 };
