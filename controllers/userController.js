@@ -1,10 +1,11 @@
-import { User } from '../models/index.js';
+import { User, Thought } from '../models/index.js';
 
 // Get Users
 const getAllUsers = async (req, res) => {
   try {
     // Find method
-    const users = await User.find({}).select('-__v');
+    const users = await User.find({})
+                            .select('-__v');
 
     return res.status(200).json(users);
   } catch (err) {
@@ -19,7 +20,7 @@ const createUser = async (req, res) => {
   try {
     // Create method
     const user = await User.create({
-      ...req.body,
+      ...req.body,  // Spread the request body
     });
     //  If user exists
     return user
@@ -39,7 +40,7 @@ const getUserById = async (req, res) => {
     // FindOne method
     const user = await User.findOne({ _id: userId })
       .select('-__v')
-      .populate('friends')
+      .populate('friends')  //  Populate with associated data
       .populate('thoughts');
 
     return !user
@@ -78,12 +79,19 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params; // Destructure to get userId
+    const user = await User.findById(userId);
+    const username = user.username;
     //   FindByIdAndDelete method
-    const deletedUser = await User.findByIdAndDelete(userId);
-    // add delete users thoughts here too
-    return !deletedUser
-      ? res.status(404).json({ message: 'User not found!' })
-      : res.status(200).json({ message: 'User deleted successfully!' });
+    const deleted = await User.findByIdAndDelete(userId);    
+
+    // Find thoughts by username and delete (BONUS)
+    const deletedThoughts = await Thought.deleteMany({ username: username });
+
+    // Check for successful deletion of user and thoughts
+    return !deleted || !deletedThoughts
+      ? res.status(404).json({ message: 'User and data not found!' })
+      : res.status(200).json({ message: 'User and data deleted successfully!' });    
+ 
   } catch (err) {
     //  Handle Errors
     console.error(err);
@@ -114,19 +122,19 @@ const addFriend = async (req, res) => {
     * Add friend to user */ 
     await User.findOneAndUpdate(
       { _id: userId },
-      { $push: { friends: friendId } },
+      { $push: { friends: friendId } }, // Add to array
       {
-        new: true,
-        runValidators: true
+        new: true,  // Return the updated document
+        runValidators: true // Run model validators on update
       }
     );
     // Add user to friend
     await User.findOneAndUpdate(
       { _id: friendId },
-      { $push: { friends: userId } },
+      { $push: { friends: userId } }, // Add to array
       {
-        new: true,
-        runValidators: true
+        new: true,  // Return the updated document
+        runValidators: true // Run model validators on update
       }
     );
     res.status(201).json({ message: 'Friend added successfully!' });
@@ -138,7 +146,6 @@ const addFriend = async (req, res) => {
 };
 
 // Delete Friend
-
 const deleteFriend = async (req, res) => {
   const { userId, friendId } = req.params; // Destructure to get userId and friendId
 
@@ -164,24 +171,27 @@ const deleteFriend = async (req, res) => {
 
     /* Remove mutual friendship
     * Remove friend from user */
-    await User.findOneAndUpdate(
+    const unfriend = await User.findOneAndUpdate(
       { _id: userId },
-      { $pull: { friends: friendId } },
+      { $pull: { friends: friendId } }, // Remove from array
       {
-        new: true,
-        runValidators: true
+        new: true,  // Return the updated document
+        runValidators: true // Run model validators on update
       }
     );
     // Remove user from friend
     await User.findOneAndUpdate(
       { _id: friendId },
-      { $pull: { friends: userId } },
+      { $pull: { friends: userId } }, // Remove from array
       {
-        new: true,
-        runValidators: true
+        new: true,  // Return the updated document
+        runValidators: true // Run model validators on update
       }
     );
-    res.status(200).json({ message: 'Friend deleted successfully!' });
+    // Check if unfriend was successful
+    return !unfriend
+    ? res.status(404).json({ message: 'Friend not found!' })
+    : res.status(200).json({ message: 'Friend deleted successfully!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error!' });

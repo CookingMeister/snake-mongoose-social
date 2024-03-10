@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+//  Format the Date Function with dayjs and custom suffix
 const formatDate = (timestamp) => {
   const parsedDate = dayjs(timestamp); // Parse timestamp as local time
 
@@ -12,7 +13,7 @@ const formatDate = (timestamp) => {
   let dayOfMonth;
   switch (day % 10) {
     case 1:
-      dayOfMonth = day + 'st';
+      dayOfMonth = day + 'st';  // Append day with suffix
       break;
     case 2:
       dayOfMonth = day + 'nd';
@@ -23,7 +24,7 @@ const formatDate = (timestamp) => {
     default:
       dayOfMonth = day + 'th';
   }
-
+  //  Get year, hour, minutes and period of day
   const year = parsedDate.format('YYYY');
   const hour = parsedDate.format('hh');
   const minutes = parsedDate.format('mm');
